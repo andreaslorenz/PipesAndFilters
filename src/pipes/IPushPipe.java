@@ -4,6 +4,9 @@ import filters.PushFilter;
 
 public interface IPushPipe<in, out> extends IPipe {
 	
-	PushFilter <out, in> pushFilter;
-
+	public PushFilter pushFilter;
+	public void write(in input);
+	
+	
+	
 }
