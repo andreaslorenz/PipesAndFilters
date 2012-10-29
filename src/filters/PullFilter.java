@@ -1,5 +1,5 @@
 package filters;
 
-public class PullFilter {
+public abstract class PullFilter<out, in> implements IFilter {
 
 }
