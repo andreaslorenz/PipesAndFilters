@@ -1,16 +1,14 @@
-/**
- * 
- */
 package filters;
 
 import pipes.IPullPipe;
 
 /**
+ * Implements IPullFilter
+ * can flush, process data
+ * Overrides isAvailable!
  * 
- * @author Stefan Laesser, Dennis Kurszlaukis ITB5_2
- *
- * @param <in> the input type
- * @param <out> the output type
+ * 
+ * @author Ramon Lopez, Andreas Lorenz
  */
 public abstract class PullFilter<in, out> implements IPullFilter<in, out> {
 	protected out _output;
@@ -36,8 +34,6 @@ public abstract class PullFilter<in, out> implements IPullFilter<in, out> {
 		} while(!finished);
 		
 		out tempOut = _output;
-		
-		clear();
 		
 		return tempOut;
 	}

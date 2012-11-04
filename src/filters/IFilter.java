@@ -1,12 +1,10 @@
-/**
- * 
- */
 package filters;
 
 /**
- * @author Stefan Lässer, Dennis Kurzlaukis
- * Filter interface
+ * Interface IFilter acts as a Marker Interace
+ * 
+ * 
+ * @author Ramon Lopez, Andreas Lorenz
  */
 public interface IFilter {
-	public void clear();
 }
