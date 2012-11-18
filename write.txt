@@ -1,0 +1,28 @@
+Center coordinates
+X: 10
+Y: 18
+
+Center coordinates
+X: 72
+Y: 16
+
+Center coordinates
+X: 136
+Y: 20
+
+Center coordinates
+X: 201
+Y: 19
+
+Center coordinates
+X: 265
+Y: 19
+
+Center coordinates
+X: 330
+Y: 21
+
+Center coordinates
+X: 395
+Y: 20
+
