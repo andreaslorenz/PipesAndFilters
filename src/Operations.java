@@ -1,9 +1,20 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.LinkedList;
 
 import javax.media.jai.JAI;
 import javax.media.jai.KernelJAI;
@@ -26,7 +37,7 @@ public class Operations {
 		image = main.median(image, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 5);
 		image = main.erode(image);
 		image = main.dilate(image);
-		image = main.centroid(image);
+		image = main.calculateBalls(image);
 		main.showPicture(main.convertToDisplayJAI(image));
 		
 	}
@@ -128,13 +139,101 @@ public class Operations {
 
             return JAI.create("dilate", parameterBlock);
 	}
+
 	
-	private PlanarImage centroid(PlanarImage image){
-	       ParameterBlock pb = new ParameterBlock();
-           ROI roi = new ROI(JAI.create("bandselect", image, new int[] { 0 }));
-           pb.add(roi);
-           pb.addSource(image); 
-           return JAI.create("centroid", pb, RenderingHints.KEY_ANTIALIASING);
+	private PlanarImage calculateBalls(PlanarImage _image) {
+		Raster pixelRaster = _image.getData();
+		LinkedList<LinkedList<Point>> allBalls = new LinkedList<LinkedList<Point>>();
+		LinkedList<Point> ball = new LinkedList<Point>();
+
+		boolean isBall = false;
+
+		StringBuffer results = new StringBuffer();
+
+		// Go horizontal through the raster
+		for (int x = 0; x < pixelRaster.getWidth(); x++) {
+
+			isBall = false;
+
+			// Go vertical through the raster
+			for (int y = 0; y < pixelRaster.getHeight(); y++) {
+
+				int[] dArray = new int[3];
+				pixelRaster.getPixel(x, y, dArray);
+
+				// Check the color of the pixel and when it falls in the defined
+				// range add it to the set
+				if (dArray[0] == 255 && dArray[1] == 255 && dArray[2] == 255
+						|| dArray[0] > 240 && dArray[1] > 240
+						&& dArray[2] > 240) {
+					ball.add(new Point(x, y));
+					isBall = true;
+				}
+			}
+			// After some Pixels have been added to a ball and the actual pixel
+			// is not anymore white, the ball is added to the array of balls
+			if (isBall == false && ball.size() > 0) {
+				allBalls.add(ball);
+				ball = new LinkedList<Point>();
+			}
+		}
+
+		// Mark the center of the white pixel set with an blue spot
+		// And print out the coordinates
+		BufferedImage buf = _image.getAsBufferedImage();
+		for (LinkedList<Point> currentBall : allBalls) {
+			Point middlePoint = getCentralPointOfBall(currentBall);
+			Graphics g = buf.createGraphics();
+
+			g.setColor(Color.RED);
+			g.fillOval(middlePoint.x - 2, middlePoint.y - 2, 4, 4);
+			System.out.println("");
+			System.out.println("Center coordinates");
+			System.out.println("X: " + middlePoint.x);
+			System.out.println("Y: " + middlePoint.y);
+
+			results.append("Center coordinates\n");
+			results.append("X: " + middlePoint.x + "\n");
+			results.append("Y: " + middlePoint.y + "\n");
+			results.append("\n");
+		}
+
+		Writer out = null;
+		File file = new File("write.txt");
+		// WRITE THE MIDDLEPOINTS INTO A TEXT FILE
+		try {
+			out = new BufferedWriter(new FileWriter(file));
+			out.write(results.toString());
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		PlanarImage output = PlanarImage.wrapRenderedImage(buf);
+
+		return output;
+	}
+	
+	private Point getCentralPointOfBall(LinkedList<Point> points){
+		int countX = 0;
+		int valueX = 0;
+		int centerX = 0;
+		
+		int countY = 0;
+		int valueY = 0;
+		int centerY = 0;
+		
+		for(Point point : points){
+			valueX += point.getX();
+			valueY += point.getY();
+			countX++;
+			countY++;
+			
+		}
+		centerX = valueX/countX;
+		centerY = valueY/countY;
+		return new Point(centerX, centerY);
+		
 	}
 	
 }
