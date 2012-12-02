@@ -16,14 +16,14 @@ public class Main {
 		Main main = new Main();
 		//How do you want the image processing to be done?
 		
-		main.pullFilters();
+		//main.pullFilters();
 		main.pushFilters();
 	}
 	
 	private void pullFilters() throws InvalidParameterException, StreamCorruptedException{
 		Rectangle rectangle = new Rectangle(0,60, 420, 50);
 		//PULL AUFRUF
-		Readable<PlanarImage> source = new ImageSource("/Users/Shady/Downloads/loetstellen.jpg");
+		Readable<PlanarImage> source = new ImageSource("C:\\Users\\Andreas\\Downloads\\loetstellen.jpg");
 		Readable<PlanarImage> roi = new DefineROIFilter(source, rectangle);
 		Readable<PlanarImage> threshold = new ThresholdFilter(roi, 0.0, 30.0, 250.0);
 		Readable<PlanarImage> median = new MedianFilter(threshold, MedianFilterDescriptor.MEDIAN_MASK_SQUARE, 5);
@@ -40,7 +40,7 @@ public class Main {
 		Rectangle rectangle = new Rectangle(0,60, 420, 50);
 
 		//PUSH AUFRUF
-		Writeable<PlanarImage> source = new ImageSource("/Users/Shady/Downloads/loetstellen.jpg",
+		Writeable<PlanarImage> source = new ImageSource("C:\\Users\\Andreas\\Downloads\\loetstellen.jpg",
 				(Writeable<PlanarImage>) new DefineROIFilter((Writeable<PlanarImage>)new ThresholdFilter(
 						(Writeable<PlanarImage>) new MedianFilter((Writeable<PlanarImage>)new ErodeFilter(
 								(Writeable<PlanarImage>)new DilateFilter(
